@@ -4,37 +4,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>付款與訂閱 - Google Play (Demo)</title>
-    <!-- 引入 Google 原生字體 -->
     <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            /* === 預設為淺色模式 (桌機版) === */
+            /* === 桌機版：淺色模式變數 === */
             --bg-color: #ffffff;
             --surface-color: #ffffff;
             --text-primary: #202124;
             --text-secondary: #5f6368;
             --border-color: #e8eaed;
             --accent-green: #01875f;
-            --title-color: #202124;
+            --accent-blue: #1a73e8;
             --danger-red: #d93025;
-            --card-border: #e8eaed;
             --hover-bg: #f1f3f4;
+            --icon-color: #5f6368;
         }
 
-        /* 當螢幕寬度小於 768px (手機版) 時，切換為深色模式變數 */
+        /* === 手機版：深色模式變數 === */
         @media (max-width: 768px) {
             :root {
-                --bg-color: #202124;
-                --surface-color: #202124;
-                --text-primary: #e8eaed;
+                --bg-color: #131314;
+                --surface-color: #1f1f1f;
+                --text-primary: #e3e3e3;
                 --text-secondary: #9aa0a6;
-                --border-color: #3c4043;
-                --accent-green: #81c995;
-                --title-color: #8ab4f8; /* 手機版截圖的文字藍色 */
+                --border-color: #444746;
+                --accent-green: #8ab4f8; 
+                --accent-blue: #8ab4f8; 
                 --danger-red: #f28b82;
-                --card-border: #5f6368;
-                --hover-bg: rgba(255, 255, 255, 0.04);
+                --hover-bg: rgba(255, 255, 255, 0.08);
+                --icon-color: #e3e3e3;
             }
         }
 
@@ -46,780 +45,581 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        .unclickable {
-            pointer-events: none;
-            cursor: default;
-        }
+        .unclickable { pointer-events: none; cursor: default; }
+        .hidden { display: none !important; }
         
-        .hidden {
-            display: none !important;
-        }
-        
-        /* === 桌機版 頂部導覽列 === */
-        header {
-            display: flex;
-            align-items: center;
-            padding: 0 24px;
-            height: 64px;
-            box-sizing: border-box;
-            border-bottom: 1px solid var(--border-color);
-            background-color: var(--surface-color);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
+        /* ==========================================
+           桌機版專屬樣式 (Desktop Only)
+           ========================================== */
+        .desktop-only { display: block; }
+        .mobile-only { display: none; }
 
+        header.desktop-header {
+            display: flex; align-items: center; padding: 0 24px; height: 64px;
+            box-sizing: border-box; border-bottom: 1px solid var(--border-color);
+            background-color: var(--surface-color); position: sticky; top: 0; z-index: 1000;
+        }
         .header-logo {
-            display: flex;
-            align-items: center;
-            text-decoration: none;
-            margin-right: 32px;
-            color: var(--text-secondary);
-            font-size: 22px;
-            font-weight: 500;
-            letter-spacing: -0.5px;
+            display: flex; align-items: center; text-decoration: none; margin-right: 32px;
+            color: var(--text-secondary); font-size: 22px; font-weight: 500; letter-spacing: -0.5px;
         }
-
-        .header-logo svg {
-            width: 40px;
-            height: 40px;
-            margin-right: 6px;
-        }
-
-        .header-tabs {
-            display: flex;
-            gap: 4px;
-            height: 100%;
-            align-items: center;
-        }
-
+        .header-logo svg { width: 40px; height: 40px; margin-right: 6px; }
+        .header-tabs { display: flex; gap: 4px; height: 100%; align-items: center; }
         .header-tab {
-            text-decoration: none;
-            color: var(--text-secondary);
-            font-size: 14px;
-            font-weight: 500;
-            padding: 8px 16px;
-            border-radius: 32px;
-            transition: background-color 0.2s;
+            text-decoration: none; color: var(--text-secondary); font-size: 14px;
+            font-weight: 500; padding: 8px 16px; border-radius: 32px; transition: 0.2s;
         }
-
-        .header-tab:hover {
-            background-color: var(--hover-bg);
-        }
-
-        .header-right {
-            display: flex;
-            align-items: center;
-            margin-left: auto;
-            gap: 8px;
-        }
-
+        .header-tab:hover { background-color: var(--hover-bg); }
+        .header-right { display: flex; align-items: center; margin-left: auto; gap: 8px; }
         .icon-btn {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: transparent;
-            border: none;
-            color: var(--text-secondary);
+            width: 48px; height: 48px; border-radius: 50%; display: flex;
+            align-items: center; justify-content: center; background: transparent;
+            border: none; color: var(--text-secondary);
         }
+        .icon-btn svg { width: 24px; height: 24px; fill: currentColor; }
+        .profile-pic { width: 32px; height: 32px; border-radius: 50%; margin-left: 8px; }
 
-        .icon-btn svg {
-            width: 24px;
-            height: 24px;
-            fill: currentColor;
-        }
+        main.desktop-main { max-width: 1000px; margin: 0 auto; padding: 36px 24px; min-height: calc(100vh - 300px); }
+        h1.d-title { font-size: 28px; font-weight: 400; margin: 0 0 32px 0; color: var(--text-primary); }
+        .d-tabs { display: flex; gap: 32px; border-bottom: 1px solid var(--border-color); margin-bottom: 32px; }
+        .d-tab { text-decoration: none; color: var(--text-secondary); font-size: 14px; font-weight: 500; padding-bottom: 16px; border-bottom: 2px solid transparent; cursor: pointer; }
+        .d-tab.active { color: #01875f; border-bottom: 2px solid #01875f; }
 
-        .profile-pic {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            margin-left: 8px;
-        }
+        /* 桌機版：內容共用 */
+        .d-section-title { font-size: 14px; color: var(--text-primary); margin-bottom: 24px; font-weight: 500; }
+        .d-month-header { font-size: 18px; color: var(--text-primary); margin: 32px 0 16px 0; font-weight: 400; }
+        .d-item { display: flex; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--border-color); }
+        .d-item:last-child { border-bottom: none; }
+        .d-logo { width: 48px; height: 48px; margin-right: 20px; border-radius: 8px; object-fit: cover; }
+        .d-info { flex: 1; padding-right: 16px; }
+        .d-name { font-size: 16px; color: var(--text-primary); margin: 0 0 4px 0; font-weight: 400; }
+        .d-desc { font-size: 14px; color: var(--text-secondary); margin: 0; }
+        .d-status-red { color: var(--danger-red); font-size: 14px; margin-bottom: 4px; }
+        .d-price { font-size: 16px; color: var(--text-primary); text-align: right; margin-right: 24px; }
+        .d-refund-text { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+        .d-action button { font-family: 'Google Sans', sans-serif; color: #01875f; background: transparent; border: none; font-size: 14px; font-weight: 500; cursor: pointer; padding: 8px 16px; }
 
-        /* === 手機版 專屬頂部導覽列 === */
-        .mobile-header {
-            display: none;
-            align-items: center;
-            padding: 16px;
-            font-size: 20px;
-            font-weight: 500;
-            color: var(--text-primary);
-            border-bottom: 1px solid var(--border-color);
-            position: sticky;
-            top: 0;
-            background-color: var(--surface-color);
-            z-index: 1000;
-            gap: 16px;
-        }
-        .mobile-header svg {
-            width: 24px;
-            height: 24px;
-            fill: var(--text-primary);
-            cursor: pointer;
-        }
+        .d-payment-desc { font-size: 14px; color: var(--text-secondary); margin: 0 0 32px 0; }
+        .d-payment-method { display: flex; align-items: center; gap: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--border-color); margin-bottom: 24px; }
+        .d-payment-method img { height: 24px; width: auto; border: 1px solid var(--border-color); border-radius: 4px; padding: 2px 4px; background-color: white; }
+        .d-payment-method span { font-size: 14px; color: var(--text-primary); font-weight: 500; }
+        .d-payment-actions { display: flex; gap: 32px; }
+        .d-payment-btn { display: flex; align-items: center; gap: 8px; color: #01875f; font-size: 14px; font-weight: 500; text-decoration: none; background: none; border: none; padding: 0; }
 
-        /* === 主要內容區 === */
-        main {
-            max-width: 1296px;
-            margin: 0 auto;
-            padding: 36px 72px;
-            min-height: calc(100vh - 300px);
-        }
-        h1 {
-            font-size: 28px;
-            font-weight: 400;
-            color: var(--text-primary);
-            margin: 0 0 32px 0;
-        }
-
-        /* === 頁籤 (Tabs) === */
-        .tabs {
-            display: flex;
-            gap: 32px;
-            border-bottom: 1px solid var(--border-color);
-            margin-bottom: 32px;
-        }
-        .tab {
-            text-decoration: none;
-            color: var(--text-secondary);
-            font-size: 14px;
-            font-weight: 500;
-            padding-bottom: 16px;
-            border-bottom: 2px solid transparent;
-            cursor: pointer;
-        }
-        .tab.active {
-            color: var(--accent-green);
-            border-bottom: 2px solid var(--accent-green); 
-        }
-
-        /* === 訂閱項目內容 === */
-        .section-title {
-            font-size: 14px;
-            color: var(--text-primary);
-            margin-bottom: 24px;
-            font-weight: 500;
-        }
-        .subscription-item {
-            display: flex;
-            align-items: center;
-            padding: 16px 0;
-            border-bottom: 1px solid var(--border-color); 
-        }
-        .sub-logo {
-            width: 48px;
-            height: 48px;
-            margin-right: 20px;
-            border-radius: 8px;
-            object-fit: cover;
-        }
-        .sub-info {
-            flex: 1;
-        }
-        .sub-name {
-            font-size: 16px;
-            color: var(--title-color); 
-            margin: 0 0 4px 0;
-            font-weight: 500;
-        }
-        .sub-plan {
-            font-size: 14px;
-            color: var(--text-secondary);
-            margin: 0 0 2px 0;
-        }
-        .sub-status-box {
-            flex: 1;
-        }
-        .sub-status {
-            font-size: 14px;
-            color: var(--danger-red); 
-            margin: 0 0 4px 0;
-        }
-        .sub-date {
-            font-size: 14px;
-            color: var(--text-secondary);
-            margin: 0;
-        }
-        .manage-btn {
-            font-family: 'Google Sans', sans-serif;
-            color: var(--accent-green); 
-            background: transparent;
-            border: none;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            padding: 8px 16px;
-        }
-
-        /* === 付款方式內容 === */
-        .payment-desc {
-            font-size: 14px;
-            color: var(--text-secondary);
-            margin: 0 0 32px 0;
-        }
-        .payment-method-item {
-            display: flex;
-            align-items: center;
-            gap: 24px;
-            padding-bottom: 24px;
-            border-bottom: 1px solid var(--border-color);
-            margin-bottom: 24px;
-        }
-        .payment-method-item img {
-            height: 24px;
-            width: auto;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            padding: 2px 4px;
-            box-sizing: content-box;
-            background-color: white; /* 確保卡片圖示的背景為白底 */
-        }
-        .payment-method-item span {
-            font-size: 14px;
-            color: var(--text-primary);
-            font-weight: 500;
-        }
-        .payment-actions {
-            display: flex;
-            gap: 32px;
-        }
-        .payment-action-btn {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--accent-green);
-            font-size: 14px;
-            font-weight: 500;
-            text-decoration: none;
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 0;
-            font-family: inherit;
-        }
-
-        /* === 預算和訂單記錄內容 === */
-        .budget-section {
-            margin-bottom: 48px;
-        }
-        .budget-amount {
-            font-size: 20px;
-            color: var(--text-primary);
-            margin-bottom: 8px;
-            font-weight: 400;
-        }
-        .budget-desc {
-            font-size: 14px;
-            color: var(--text-secondary);
-            margin-bottom: 20px;
-        }
-        .set-budget-btn {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            color: var(--accent-green);
-            font-size: 14px;
-            font-weight: 500;
-            text-decoration: none;
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 0;
-        }
-        .set-budget-btn svg {
-            width: 18px;
-            height: 18px;
-            fill: currentColor;
-        }
-        .order-history-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-        .order-history-title {
-            font-size: 24px;
-            font-weight: 400;
-            color: var(--text-primary);
-            margin: 0;
-        }
-        .filter-btn {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 6px 16px;
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            background: transparent;
-            color: var(--text-secondary);
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-        }
-        .filter-btn svg {
-            width: 20px;
-            height: 20px;
-            fill: currentColor;
-        }
-        
-        /* 手機版特有：月份標題 */
-        .month-header {
-            display: none;
-            font-size: 16px;
-            color: var(--text-primary);
-            margin: 24px 0 8px 0;
-            font-weight: 400;
-        }
-
-        .order-item {
-            display: flex;
-            align-items: center;
-            padding: 16px 0;
-            border-bottom: 1px solid var(--border-color);
-        }
-        .order-item:last-child {
-            border-bottom: none;
-        }
-        .order-info {
-            flex: 1;
-            padding-right: 16px;
-        }
-        .order-name {
-            font-size: 16px;
-            color: var(--text-primary);
-            margin: 0 0 4px 0;
-            font-weight: 400;
-            display: -webkit-box;
-            -webkit-line-clamp: 1;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            word-break: break-all;
-        }
-        .order-date {
-            font-size: 14px;
-            color: var(--text-secondary);
-            margin: 0;
-        }
-        .order-price {
-            font-size: 16px;
-            color: var(--text-primary);
-            text-align: right;
-            margin-right: 24px;
-        }
-        .order-action {
-            width: auto;
-            display: flex;
-            align-items: center;
-        }
-        .order-action button {
-            font-family: 'Google Sans', sans-serif;
-            color: var(--accent-green);
-            background: transparent;
-            border: none;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            padding: 0;
-        }
-        .order-action-chevron {
-            display: none;
-            fill: var(--text-secondary);
-            width: 20px;
-            height: 20px;
-        }
-
-        /* === 頁尾 === */
-        footer {
-            max-width: 1296px;
-            margin: 0 auto;
-            padding: 0 72px 40px 72px;
-        }
-        .footer-divider {
-            border-top: 1px solid var(--border-color);
-            margin-bottom: 36px;
-        }
-        .footer-top {
-            display: flex;
-            gap: 160px; 
-        }
-        .footer-section {
-            display: flex;
-            flex-direction: column;
-        }
-        .footer-heading {
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--text-primary);
-            margin-bottom: 24px;
-        }
-        .footer-link, .footer-bottom-link {
-            font-size: 14px;
-            color: var(--text-secondary);
-            text-decoration: none;
-            margin-bottom: 16px;
-        }
-        .footer-bottom {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 24px;
-            margin-top: 32px;
-            align-items: center;
-        }
-        .footer-vat {
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
-        .footer-region {
-            margin-left: auto; 
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
-
-        /* =========================================
-           響應式設計 (Mobile RWD)
-           ========================================= */
+        /* ==========================================
+           手機版專屬樣式 (Mobile Only)
+           ========================================== */
         @media (max-width: 768px) {
-            header, .tabs, h1, .order-history-header {
-                display: none !important;
+            .desktop-only { display: none !important; }
+            .mobile-only { display: block; }
+
+            .m-header {
+                display: flex; align-items: center; padding: 16px; font-size: 20px;
+                font-weight: 400; color: var(--text-primary); border-bottom: 1px solid var(--border-color);
+                position: sticky; top: 0; background-color: var(--bg-color); z-index: 1000; gap: 24px;
             }
+            .m-header svg { width: 24px; height: 24px; fill: var(--icon-color); cursor: pointer; }
             
-            .mobile-header {
-                display: flex;
-            }
+            .m-list-item { display: flex; align-items: center; padding: 18px 24px; gap: 24px; cursor: pointer; transition: background 0.2s; }
+            .m-list-item:hover { background-color: var(--hover-bg); }
+            .m-list-icon { width: 24px; height: 24px; fill: var(--icon-color); flex-shrink: 0; }
+            .m-list-text { font-size: 16px; color: var(--text-primary); font-weight: 400; }
+            .m-list-subtext { font-size: 14px; color: var(--text-secondary); margin-top: 4px; }
+            .m-divider { height: 1px; background-color: var(--border-color); margin: 8px 24px; }
 
-            main {
-                padding: 0;
-                min-height: auto;
-            }
+            .m-subs-info { padding: 16px 24px; font-size: 14px; color: var(--text-secondary); line-height: 1.5; }
+            .m-subs-section { font-size: 16px; color: var(--text-primary); margin: 24px 24px 16px; font-weight: 400; }
+            .m-sub-card { border: 1px solid var(--border-color); border-radius: 8px; margin: 0 24px 16px; padding: 16px; }
+            .m-sub-card-top { display: flex; justify-content: space-between; align-items: flex-start; }
+            .m-sub-detail { flex: 1; padding-left: 16px; padding-right: 16px; }
+            .m-sub-title { font-size: 16px; color: var(--accent-blue); margin: 0 0 8px 0; font-weight: 400; }
+            .m-sub-desc { font-size: 14px; color: var(--text-secondary); margin: 0 0 4px 0; }
+            .m-sub-status-red { color: var(--danger-red); margin: 8px 0 4px; font-size: 14px; }
+            .m-sub-icon { width: 48px; height: 48px; border-radius: 8px; object-fit: cover; }
+            
+            .m-budget-top { padding: 24px; }
+            .m-budget-label { font-size: 14px; color: var(--text-secondary); margin-bottom: 24px; }
+            .m-budget-amount { font-size: 32px; color: var(--text-primary); margin: 0 0 16px 0; font-weight: 500; }
+            .m-budget-desc { font-size: 14px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 24px; }
+            .m-budget-link { color: var(--accent-blue); font-size: 14px; text-decoration: none; font-weight: 500; }
+            .m-history-month { font-size: 14px; color: var(--text-secondary); margin: 24px 24px 8px; }
+            .m-history-item { display: flex; align-items: center; padding: 16px 24px; gap: 16px; }
+            .m-history-item img { width: 40px; height: 40px; border-radius: 8px; }
+            .m-history-info { flex: 1; }
+            .m-history-title { font-size: 16px; color: var(--text-primary); margin: 0 0 4px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px; }
+            .m-history-date { font-size: 14px; color: var(--text-secondary); margin: 0; }
+            .m-history-price { font-size: 16px; color: var(--text-primary); margin-left: auto; text-align: right; }
+            .m-refund-text { font-size: 12px; color: var(--text-secondary); margin-top: 4px; text-align: right; }
+            .order-action-chevron { fill: var(--text-secondary); width: 20px; height: 20px; margin-left: 8px; }
+        }
 
-            /* 訂閱項目 - 卡片式外框 */
-            .subs-container {
-                border: 1px solid var(--card-border);
-                border-radius: 12px;
-                margin: 16px;
-                padding: 0 16px;
-            }
-            .section-title {
-                margin: 24px 16px 8px;
-                font-size: 16px;
-            }
-            .subscription-item {
-                padding: 20px 0;
-            }
-            .sub-status-box, .manage-btn {
-                display: none; 
-            }
-
-            /* 預算與消費紀錄 */
-            .budget-section {
-                padding: 24px 16px;
-                border-bottom: 1px solid var(--border-color);
-                margin-bottom: 0;
-            }
-            .month-header {
-                display: block; 
-                padding: 24px 16px 8px;
-            }
-            .order-item {
-                padding: 16px;
-                border-bottom: none;
-            }
-            .order-price {
-                margin-right: 8px;
-            }
-            .order-action button {
-                display: none; 
-            }
-            .order-action-chevron {
-                display: block; 
-            }
-
-            /* 付款方式 */
-            #content-payment {
-                padding: 24px 16px;
-            }
-
-            /* 頁尾調整 */
-            footer {
-                padding: 24px 16px;
-            }
-            .footer-top {
-                flex-direction: column;
-                gap: 24px;
-            }
-            .footer-region {
-                margin-left: 0;
-            }
+        /* 頁尾 */
+        footer { max-width: 1296px; margin: 0 auto; padding: 0 72px 40px 72px; }
+        .footer-divider { border-top: 1px solid var(--border-color); margin-bottom: 36px; }
+        .footer-top { display: flex; gap: 160px; }
+        .footer-section { display: flex; flex-direction: column; }
+        .footer-heading { font-size: 14px; font-weight: 500; color: var(--text-primary); margin-bottom: 24px; }
+        .footer-link { font-size: 14px; color: var(--text-secondary); text-decoration: none; margin-bottom: 16px; }
+        @media (max-width: 768px) {
+            footer { padding: 24px 16px; }
+            .footer-top { flex-direction: column; gap: 24px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- 手機版專屬頂部導覽列 -->
-    <div class="mobile-header">
-        <svg class="unclickable" focusable="false" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"></path></svg>
-        <span id="mobile-header-title">訂閱項目</span>
-    </div>
-
-    <!-- 桌機版頂部導覽列 -->
-    <header>
-        <a href="#" class="header-logo unclickable">
-            <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
-                <path fill="none" d="M0,0h40v40H0V0z"></path>
-                <g>
-                    <path d="M19.7,19.2L4.3,35.3c0,0,0,0,0,0c0.5,1.7,2.1,3,4,3c0.8,0,1.5-0.2,2.1-0.6l0,0l17.4-9.9L19.7,19.2z" fill="#EA4335"></path>
-                    <path d="M35.3,16.4L35.3,16.4l-7.5-4.3l-8.4,7.4l8.5,8.3l7.5-4.2c1.3-0.7,2.2-2.1,2.2-3.6C37.5,18.5,36.6,17.1,35.3,16.4z" fill="#FBBC04"></path>
-                    <path d="M4.3,4.7C4.2,5,4.2,5.4,4.2,5.8v28.5c0,0.4,0,0.7,0.1,1.1l16-15.7L4.3,4.7z" fill="#4285F4"></path>
-                    <path d="M19.8,20l8-7.9L10.5,2.3C9.9,1.9,9.1,1.7,8.3,1.7c-1.9,0-3.6,1.3-4,3c0,0,0,0,0,0L19.8,20z" fill="#34A853"></path>
-                </g>
-            </svg>
-            <span>Google Play</span>
-        </a>
+    <!-- ==========================================
+         手機版視圖 (Mobile View)
+         ========================================== -->
+    <div class="mobile-only">
         
-        <nav class="header-tabs">
-            <a href="#" class="header-tab unclickable">遊戲</a>
-            <a href="#" class="header-tab unclickable">應用程式</a>
-            <a href="#" class="header-tab unclickable">圖書</a>
-            <a href="#" class="header-tab unclickable">兒童</a>
-        </nav>
-
-        <div class="header-right">
-            <button class="icon-btn unclickable">
-                <svg focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path></svg>
-            </button>
-            <button class="icon-btn unclickable">
-                <svg focusable="false" viewBox="0 0 24 24"><path d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"></path></svg>
-            </button>
-            <img class="profile-pic unclickable" src="https://lh3.googleusercontent.com/a/ACg8ocKzZR440WeEjLWBYIPvUH_jjixCN6V-7EW80RENNXSMfGoEUfCm=s32-c-k-cc-mo" alt="Profile">
-        </div>
-    </header>
-
-    <main>
-        <h1>付款與訂閱</h1>
-        
-        <div class="tabs">
-            <a href="#" id="tab-payment" class="tab">付款方式</a>
-            <a href="#" id="tab-subs" class="tab active">訂閱項目</a>
-            <a href="#" id="tab-history" class="tab">預算和訂單記錄</a>
+        <div class="m-header">
+            <svg id="m-btn-back" class="hidden" focusable="false" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"></path></svg>
+            <span id="m-title">付款與訂閱</span>
         </div>
 
-        <!-- 訂閱項目內容 -->
-        <div id="content-subs">
-            <div class="section-title">由 Google 管理</div>
-            <div class="subs-container">
-                <div class="subscription-item">
-                    <img src="https://play-lh.googleusercontent.com/B5AENJqFOd91t5cWZLTQbVUm7iDWzYVM1n0Pe2RI_46dhlWMtVAUBioUvy4YMXWdwA=s50-rw" alt="Google One" class="sub-logo">
-                    <div class="sub-info">
-                        <p class="sub-name">Google One</p>
-                        <p class="sub-plan">Google AI Pro (5 TB)</p>
-                        <p class="sub-date">續訂日期：2026年9月8日</p>
-                    </div>
-                    <div class="sub-status-box">
-                        <p class="sub-status">已取消</p>
-                        <p class="sub-date">訂閱期將於 2026年9月8日結束</p>
-                    </div>
-                    <button class="manage-btn">管理</button>
+        <div id="m-page-menu">
+            <div class="m-list-item" onclick="navToMobile('payment', '付款方式')">
+                <svg class="m-list-icon" viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"></path></svg>
+                <span class="m-list-text">付款方式</span>
+            </div>
+            <div class="m-list-item" onclick="navToMobile('auth', '購買交易驗證')">
+                <svg class="m-list-icon" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"></path></svg>
+                <span class="m-list-text">購買交易驗證</span>
+            </div>
+            <div class="m-list-item" onclick="navToMobile('subs', '訂閱')">
+                <svg class="m-list-icon" viewBox="0 0 24 24"><path d="M20.54 5.23l-1.39-1.68C18.88 3.21 18.47 3 18 3H6c-.47 0-.88.21-1.16.55L3.46 5.23C3.17 5.57 3 6.02 3 6.5V19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6.5c0-.48-.17-.93-.46-1.27zM6.24 5h11.52l.83 1H5.42l.82-1zM5 19V8h14v11H5zm6-5.5l5-4 1.41 1.41L11 16.33 7.59 12.92 9 11.5l2 2z"></path></svg>
+                <span class="m-list-text">訂閱</span>
+            </div>
+            <div class="m-list-item" onclick="navToMobile('history', '預算和消費記錄')">
+                <svg class="m-list-icon" viewBox="0 0 24 24"><path d="M13 10h-2V8h2v2zm0-4h-2V4h2v2zm-1 14c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-18C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 14h-2v-2h2v2z"></path></svg>
+                <span class="m-list-text">預算和消費記錄</span>
+            </div>
+            <div class="m-list-item" onclick="navToMobile('redeem', '使用兌換碼')">
+                <svg class="m-list-icon" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-5 14H4v-4h11v4zm0-5H4V9h11v4zm5 5h-4V9h4v9z"></path></svg>
+                <span class="m-list-text">使用兌換碼</span>
+            </div>
+        </div>
+
+        <div id="m-page-payment" class="hidden">
+            <div class="m-list-item unclickable">
+                <img src="https://lh6.ggpht.com/Yxh9sdcTHd977Lb0QUdfokZHoeaudu1ORe0i-__gdbH4te_4Mfvx3Y8FhR9-MUkzkXgLpo6H" style="width:36px; background:white; padding:2px; border-radius:4px;">
+                <span class="m-list-text">Visa-8809</span>
+            </div>
+            <div class="m-subs-info" style="padding-top:0;">在 Google 帳戶中新增付款方式</div>
+            <div class="m-list-item unclickable">
+                <svg class="m-list-icon"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"></path></svg>
+                <span class="m-list-text">新增信用卡或簽帳金融卡</span>
+            </div>
+            <div class="m-list-item unclickable">
+                <svg class="m-list-icon"><path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14zm-4-1h-2v-2h2v2zm2-2H9V7h6v9z"></path></svg>
+                <span class="m-list-text">新增「遠傳電信 (Far EasTone Telecom)」帳單</span>
+            </div>
+            <div class="m-list-item unclickable">
+                <svg class="m-list-icon"><path d="M8.32 21.97C8.21 21.92 8.16 21.78 8.22 21.67L10.3 12H7.26c-.19 0-.32-.19-.24-.37L9.94 2h7.82c1.78 0 3.01 1.25 2.76 2.92l-.93 6.13c-.15 1.01-1.04 1.76-2.06 1.76H13l-4.22 8.9c-.06.14-.23.2-.38.15l-.08.11z"></path></svg>
+                <span class="m-list-text">新增 PayPal</span>
+            </div>
+            <div class="m-list-item unclickable">
+                <svg class="m-list-icon"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-5 14H4v-4h11v4zm0-5H4V9h11v4zm5 5h-4V9h4v9z"></path></svg>
+                <span class="m-list-text">使用兌換碼</span>
+            </div>
+            <div class="m-divider"></div>
+            <div class="m-subs-info">更多選項</div>
+            <div class="m-list-item unclickable">
+                <svg class="m-list-icon"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.06-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.73,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.06,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.43-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.49-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"></path></svg>
+                <span class="m-list-text">更多付款設定</span>
+            </div>
+        </div>
+
+        <div id="m-page-auth" class="hidden">
+            <div style="padding: 24px; display: flex; align-items: center; gap: 16px; font-size: 16px;" class="unclickable">
+                <svg style="fill: var(--accent-blue); width: 24px; height: 24px;" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"></path></svg>
+                你目前使用生物辨識驗證
+            </div>
+            <div style="padding: 0 24px 24px; font-size: 14px; color: var(--text-secondary); line-height: 1.5;">這部裝置以此 Google 帳戶進行的 Google Play 購買交易會經過驗證。<br><br>驗證可防止未經授權的交易，與他人共用裝置時很重要</div>
+            <div class="m-divider"></div>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px 24px;" class="unclickable">
+                <div>
+                    <div class="m-list-text">生物辨識驗證</div>
+                    <div class="m-list-subtext">使用臉孔或指紋取代密碼來驗證</div>
+                </div>
+                <div style="width: 40px; height: 24px; background-color: var(--accent-blue); border-radius: 12px; position: relative;">
+                    <div style="width: 20px; height: 20px; background-color: #202124; border-radius: 50%; position: absolute; right: 2px; top: 2px;"></div>
+                </div>
+            </div>
+            <div class="m-list-item unclickable" style="padding-top:0;">
+                <div>
+                    <div class="m-list-text">驗證頻率</div>
+                    <div class="m-list-subtext">設定何時需要驗證</div>
                 </div>
             </div>
         </div>
 
-        <!-- 付款方式內容 -->
-        <div id="content-payment" class="hidden">
-            <p class="payment-desc">在 Google 帳戶中新增付款方式。Google 不會對外公開你的付款資訊。</p>
-            
-            <div class="payment-method-item">
-                <img src="https://lh6.ggpht.com/Yxh9sdcTHd977Lb0QUdfokZHoeaudu1ORe0i-__gdbH4te_4Mfvx3Y8FhR9-MUkzkXgLpo6H" alt="Visa">
-                <span>Visa-8809</span>
+        <div id="m-page-subs" class="hidden">
+            <div class="m-subs-info">
+                為協助開發人員提供訂閱服務，Google 可能會將不含身分識別資訊的訂閱資料提供給開發人員。<span style="color:var(--text-primary); text-decoration:underline;">進一步瞭解訂閱機制</span>
             </div>
-            
-            <div class="payment-actions">
-                <button class="payment-action-btn">
-                    <span class="plus-icon">+</span> 新增付款方式
-                </button>
-                <button class="payment-action-btn">
-                    <svg class="edit-icon" focusable="false" viewBox="0 0 24 24">
-                        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path>
-                    </svg> 
-                    編輯付款方式
-                </button>
+            <div class="m-subs-section">由 Google 管理</div>
+
+            <!-- 只保留 Google One -->
+            <div class="m-sub-card">
+                <div class="m-sub-card-top">
+                    <img src="https://play-lh.googleusercontent.com/B5AENJqFOd91t5cWZLTQbVUm7iDWzYVM1n0Pe2RI_46dhlWMtVAUBioUvy4YMXWdwA=s50-rw" class="m-sub-icon" style="background:white; padding:4px; box-sizing:border-box;">
+                    <div class="m-sub-detail">
+                        <div class="m-sub-title">Google One</div>
+                        <div class="m-sub-status-red">已取消</div>
+                        <div class="m-sub-desc">Google AI Pro (5 TB)</div>
+                        <div class="m-sub-desc">訂閱期將於 2026年9月8日結束</div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- 預算和訂單紀錄內容 -->
-        <div id="content-history" class="hidden">
-            <div class="budget-section">
-                <div class="budget-amount">5月的支出總額：$190</div>
-                <div class="budget-desc">你設定的預算僅適用於這個帳戶，你可以隨時變更預算金額。</div>
-                <button class="set-budget-btn">
-                    <svg focusable="false" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path></svg>
-                    設定預算
-                </button>
+        <div id="m-page-history" class="hidden">
+            <div class="m-budget-top">
+                <div class="m-budget-label" style="font-size: 16px;">5月的支出總額</div>
+                <div class="m-budget-amount">$190</div>
+                <div class="m-budget-desc">你設定的預算僅適用於這個帳戶，你可以隨時變更預算金額。</div>
+                <span class="m-budget-link unclickable">設定預算</span>
             </div>
-
-            <div class="order-history-header">
-                <h2 class="order-history-title">訂單記錄</h2>
-                <button class="filter-btn unclickable">
-                    所有訂單 
-                    <svg focusable="false" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"></path></svg>
-                </button>
-            </div>
+            <div class="m-divider" style="margin-top:0;"></div>
 
             <!-- 月份分組: 4月 -->
-            <div class="month-header">4月</div>
-            <div class="order-item">
-                <img src="https://play-lh.googleusercontent.com/aCdwcnQx71qiSx5XF0zer3NyAj99BbwUlK2mogwuo4KGMKQ7LPbbMm4UxZsAjNQUuGAid38vY7a_XzO4iHHd=s50-rw" alt="月資源包A" class="sub-logo">
-                <div class="order-info">
-                    <p class="order-name">月資源包A</p>
-                    <p class="order-date">2026年4月11日</p>
+            <div class="m-history-month">4月</div>
+            <div class="m-history-item">
+                <img src="https://play-lh.googleusercontent.com/aCdwcnQx71qiSx5XF0zer3NyAj99BbwUlK2mogwuo4KGMKQ7LPbbMm4UxZsAjNQUuGAid38vY7a_XzO4iHHd=s50-rw">
+                <div class="m-history-info">
+                    <div class="m-history-title">月資源包A</div>
+                    <div class="m-history-date">2026年4月11日</div>
                 </div>
-                <div class="order-price">$1,000.00</div>
-                <div class="order-action">
-                    <button>回報問題</button>
-                    <svg class="order-action-chevron" focusable="false" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"></path></svg>
-                </div>
+                <div class="m-history-price">$1,000.00</div>
+                <svg class="order-action-chevron" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"></path></svg>
             </div>
-
-            <div class="order-item">
-                <img src="https://play-lh.googleusercontent.com/aCdwcnQx71qiSx5XF0zer3NyAj99BbwUlK2mogwuo4KGMKQ7LPbbMm4UxZsAjNQUuGAid38vY7a_XzO4iHHd=s50-rw" alt="高級通行證" class="sub-logo">
-                <div class="order-info">
-                    <p class="order-name">高級通行證</p>
-                    <p class="order-date">2026年4月9日</p>
+            <div class="m-history-item">
+                <img src="https://play-lh.googleusercontent.com/aCdwcnQx71qiSx5XF0zer3NyAj99BbwUlK2mogwuo4KGMKQ7LPbbMm4UxZsAjNQUuGAid38vY7a_XzO4iHHd=s50-rw">
+                <div class="m-history-info">
+                    <div class="m-history-title">高級通行證</div>
+                    <div class="m-history-date">2026年4月9日</div>
                 </div>
-                <div class="order-price">$580.00</div>
-                <div class="order-action">
-                    <button>回報問題</button>
-                    <svg class="order-action-chevron" focusable="false" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"></path></svg>
-                </div>
-            </div>
-
-            <!-- 月份分組: 2月 -->
-            <div class="month-header">2月</div>
-            <div class="order-item">
-                <img src="https://play-lh.googleusercontent.com/aCdwcnQx71qiSx5XF0zer3NyAj99BbwUlK2mogwuo4KGMKQ7LPbbMm4UxZsAjNQUuGAid38vY7a_XzO4iHHd=s50-rw" alt="魔法石3000個" class="sub-logo">
-                <div class="order-info">
-                    <p class="order-name">【限定1次!!】高級增量特賣 魔法石3000個</p>
-                    <p class="order-date">2026年2月16日</p>
-                </div>
-                <div class="order-price">$580.00</div>
-                <div class="order-action">
-                    <button>回報問題</button>
-                    <svg class="order-action-chevron" focusable="false" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"></path></svg>
-                </div>
+                <div class="m-history-price">$580.00</div>
+                <svg class="order-action-chevron" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"></path></svg>
             </div>
 
             <!-- 月份分組: 10月 2025 -->
-            <div class="month-header">10月 2025</div>
-            <div class="order-item">
-                <img src="https://play-lh.googleusercontent.com/VZwuIXIGUFIwk1z2IXhMaPcLqoSWfPcuK-JxXgvh_uM0Ob2qETvD9PHQ2rWEx9qiUQ=s50-rw" alt="聖晶石" class="sub-logo">
-                <div class="order-info">
-                    <p class="order-name">聖晶石25個+贈送（免費）16個</p>
-                    <p class="order-date">2025年10月23日</p>
+            <div class="m-history-month">10月 2025</div>
+            <div class="m-history-item">
+                <img src="https://play-lh.googleusercontent.com/VZwuIXIGUFIwk1z2IXhMaPcLqoSWfPcuK-JxXgvh_uM0Ob2qETvD9PHQ2rWEx9qiUQ=s50-rw">
+                <div class="m-history-info">
+                    <div class="m-history-title">聖晶石25個+贈送（免費）16個</div>
+                    <div class="m-history-date">2025年10月23日</div>
                 </div>
-                <div class="order-price">$720.00</div>
-                <div class="order-action">
-                    <button>回報問題</button>
-                    <svg class="order-action-chevron" focusable="false" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"></path></svg>
-                </div>
+                <div class="m-history-price">$720.00</div>
+                <svg class="order-action-chevron" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"></path></svg>
             </div>
 
             <!-- 月份分組: 9月 2025 -->
-            <div class="month-header">9月 2025</div>
-            <div class="order-item" style="border-bottom: none;">
-                <img src="https://play-lh.googleusercontent.com/B5AENJqFOd91t5cWZLTQbVUm7iDWzYVM1n0Pe2RI_46dhlWMtVAUBioUvy4YMXWdwA=s50-rw" alt="Google AI Pro (5 TB)" class="sub-logo">
-                <div class="order-info">
-                    <p class="order-name">Google AI Pro (5 TB)</p>
-                    <p class="order-date">2025年9月8日</p>
+            <div class="m-history-month">9月 2025</div>
+            <div class="m-history-item">
+                <img src="https://play-lh.googleusercontent.com/B5AENJqFOd91t5cWZLTQbVUm7iDWzYVM1n0Pe2RI_46dhlWMtVAUBioUvy4YMXWdwA=s50-rw" style="background:white; padding:2px;">
+                <div class="m-history-info">
+                    <div class="m-history-title">Google AI Pro (5 TB)</div>
+                    <div class="m-history-date">2025年9月8日</div>
                 </div>
-                <div class="order-price">$6,500.00</div>
-                <div class="order-action">
-                    <button>回報問題</button>
-                    <svg class="order-action-chevron" focusable="false" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"></path></svg>
+                <div class="m-history-price">$6,500.00</div>
+                <svg class="order-action-chevron" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"></path></svg>
+            </div>
+
+            <!-- 月份分組: 8月 2025 -->
+            <div class="m-history-month">8月 2025</div>
+            <div class="m-history-item">
+                <img src="https://play-lh.googleusercontent.com/B5AENJqFOd91t5cWZLTQbVUm7iDWzYVM1n0Pe2RI_46dhlWMtVAUBioUvy4YMXWdwA=s50-rw" style="background:white; padding:2px;">
+                <div class="m-history-info">
+                    <div class="m-history-title">Google AI Pro (5 TB)</div>
+                    <div class="m-history-date">2025年8月18日</div>
+                </div>
+                <div class="m-history-price">
+                    <div>$650.00</div>
+                    <div class="m-refund-text">已退款</div>
                 </div>
             </div>
 
+            <!-- 月份分組: 7月 2025 -->
+            <div class="m-history-month">7月 2025</div>
+            <div class="m-history-item">
+                <img src="https://play-lh.googleusercontent.com/B5AENJqFOd91t5cWZLTQbVUm7iDWzYVM1n0Pe2RI_46dhlWMtVAUBioUvy4YMXWdwA=s50-rw" style="background:white; padding:2px;">
+                <div class="m-history-info">
+                    <div class="m-history-title">Google AI Pro (5 TB)</div>
+                    <div class="m-history-date">2025年7月18日</div>
+                </div>
+                <div class="m-history-price">$650.00</div>
+            </div>
         </div>
 
-    </main>
+        <div id="m-page-redeem" class="hidden">
+            <div style="padding: 24px; display: flex; align-items: center; gap: 12px; font-size: 14px;" class="unclickable">
+                <svg width="24" height="24" viewBox="0 0 40 40"><path d="M19.7,19.2L4.3,35.3c0,0,0,0,0,0c0.5,1.7,2.1,3,4,3c0.8,0,1.5-0.2,2.1-0.6l0,0l17.4-9.9L19.7,19.2z" fill="#EA4335"></path><path d="M35.3,16.4L35.3,16.4l-7.5-4.3l-8.4,7.4l8.5,8.3l7.5-4.2c1.3-0.7,2.2-2.1,2.2-3.6C37.5,18.5,36.6,17.1,35.3,16.4z" fill="#FBBC04"></path><path d="M4.3,4.7C4.2,5,4.2,5.4,4.2,5.8v28.5c0,0.4,0,0.7,0.1,1.1l16-15.7L4.3,4.7z" fill="#4285F4"></path><path d="M19.8,20l8-7.9L10.5,2.3C9.9,1.9,9.1,1.7,8.3,1.7c-1.9,0-3.6,1.3-4,3c0,0,0,0,0,0L19.8,20z" fill="#34A853"></path></svg>
+                kev80814@gmail.com
+            </div>
+            <div style="padding: 0 24px; margin-bottom: 24px;" class="unclickable">
+                <input type="text" style="width: 100%; background: transparent; border: none; border-bottom: 2px solid var(--accent-blue); color: var(--text-primary); font-size: 16px; padding: 8px 0; outline: none;" placeholder="輸入代碼">
+            </div>
+            <div style="display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 4px; color: var(--text-primary); font-size: 14px; margin: 0 24px 24px;" class="unclickable">
+                <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M3 5v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2H5c-1.11 0-2 .9-2 2zm12 4c0 1.66-1.34 3-3 3s-3-1.34-3-3 1.34-3 3-3 3 1.34 3 3zm-9 8c0-2 4-3.1 6-3.1s6 1.1 6 3.1v1H6v-1z"></path></svg>
+                掃描禮物卡
+            </div>
+            <div style="padding: 0 24px; font-size: 12px; color: var(--text-secondary); line-height: 1.5;">輕觸「兌換」即表示您同意遵守禮物卡與優惠碼適用的《條款及細則》。</div>
+            <div style="position: fixed; bottom: 0; width: 100%; padding: 16px; box-sizing: border-box; background: var(--bg-color); border-top: 1px solid var(--border-color);" class="unclickable">
+                <button style="width: 100%; background-color: #3c4043; color: #9aa0a6; border: none; padding: 12px; border-radius: 24px; font-size: 14px; font-weight: 500;">兌換</button>
+            </div>
+        </div>
 
-    <footer>
-        <div class="footer-divider"></div>
-        <div class="footer-top">
-            <div class="footer-section">
-                <span class="footer-heading">Google Play</span>
-                <a href="#" class="footer-link unclickable">Play Pass</a>
-                <a href="#" class="footer-link unclickable">Play 點數</a>
-                <a href="#" class="footer-link unclickable">禮物卡</a>
-                <a href="#" class="footer-link unclickable">兌換</a>
-                <a href="#" class="footer-link unclickable">退款政策</a>
+    </div>
+
+    <!-- ==========================================
+         桌機版視圖 (Desktop View)
+         ========================================== -->
+    <div class="desktop-only">
+        <header class="desktop-header">
+            <a href="#" class="header-logo unclickable">
+                <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                    <path fill="none" d="M0,0h40v40H0V0z"></path>
+                    <g>
+                        <path d="M19.7,19.2L4.3,35.3c0,0,0,0,0,0c0.5,1.7,2.1,3,4,3c0.8,0,1.5-0.2,2.1-0.6l0,0l17.4-9.9L19.7,19.2z" fill="#EA4335"></path>
+                        <path d="M35.3,16.4L35.3,16.4l-7.5-4.3l-8.4,7.4l8.5,8.3l7.5-4.2c1.3-0.7,2.2-2.1,2.2-3.6C37.5,18.5,36.6,17.1,35.3,16.4z" fill="#FBBC04"></path>
+                        <path d="M4.3,4.7C4.2,5,4.2,5.4,4.2,5.8v28.5c0,0.4,0,0.7,0.1,1.1l16-15.7L4.3,4.7z" fill="#4285F4"></path>
+                        <path d="M19.8,20l8-7.9L10.5,2.3C9.9,1.9,9.1,1.7,8.3,1.7c-1.9,0-3.6,1.3-4,3c0,0,0,0,0,0L19.8,20z" fill="#34A853"></path>
+                    </g>
+                </svg>
+                <span>Google Play</span>
+            </a>
+            
+            <nav class="header-tabs">
+                <a href="#" class="header-tab unclickable">遊戲</a>
+                <a href="#" class="header-tab unclickable">應用程式</a>
+                <a href="#" class="header-tab unclickable">圖書</a>
+                <a href="#" class="header-tab unclickable">兒童</a>
+            </nav>
+
+            <div class="header-right">
+                <button class="icon-btn unclickable">
+                    <svg focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path></svg>
+                </button>
+                <button class="icon-btn unclickable">
+                    <svg focusable="false" viewBox="0 0 24 24"><path d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"></path></svg>
+                </button>
+                <img class="profile-pic unclickable" src="https://lh3.googleusercontent.com/a/ACg8ocKzZR440WeEjLWBYIPvUH_jjixCN6V-7EW80RENNXSMfGoEUfCm=s32-c-k-cc-mo" alt="Profile">
             </div>
-            <div class="footer-section">
-                <span class="footer-heading">親子與家庭</span>
-                <a href="#" class="footer-link unclickable">家長指南</a>
-                <a href="#" class="footer-link unclickable">家庭共享</a>
+        </header>
+
+        <main class="desktop-main">
+            <h1 class="d-title">付款與訂閱</h1>
+            
+            <div class="d-tabs tabs">
+                <a href="#" id="d-tab-payment" class="d-tab tab">付款方式</a>
+                <a href="#" id="d-tab-subs" class="d-tab tab active">訂閱項目</a>
+                <a href="#" id="d-tab-history" class="d-tab tab">預算和訂單記錄</a>
             </div>
-        </div>
-        <div class="footer-bottom">
-            <a href="#" class="footer-bottom-link unclickable">服務條款</a>
-            <a href="#" class="footer-bottom-link unclickable">隱私權</a>
-            <a href="#" class="footer-bottom-link unclickable">關於 Google Play</a>
-            <a href="#" class="footer-bottom-link unclickable">開發人員</a>
-            <a href="#" class="footer-bottom-link unclickable">Google Store</a>
-            <span class="footer-vat">所有價格均含加值稅。</span>
-            <div class="footer-region unclickable">
-                <img src="https://ssl.gstatic.com/store/images/regionflags/taiwan.png" alt="Taiwan Flag">
-                <span>台灣 (繁體中文)</span>
+
+            <!-- 桌機版：訂閱項目 -->
+            <div id="d-content-subs">
+                <div class="d-section-title">由 Google 管理</div>
+                <div class="d-item">
+                    <img src="https://play-lh.googleusercontent.com/B5AENJqFOd91t5cWZLTQbVUm7iDWzYVM1n0Pe2RI_46dhlWMtVAUBioUvy4YMXWdwA=s50-rw" alt="Google One" class="d-logo" style="background:white; padding:4px; box-sizing:border-box;">
+                    <div class="d-info">
+                        <p class="d-name">Google One</p>
+                        <p class="d-desc">Google AI Pro (5 TB)</p>
+                    </div>
+                    <div style="flex: 1;">
+                        <p class="d-status-red">已取消</p>
+                        <p class="d-desc">訂閱期將於 2026年9月8日結束</p>
+                    </div>
+                    <div class="d-action">
+                        <button class="unclickable">管理</button>
+                    </div>
+                </div>
             </div>
-        </div>
-    </footer>
+
+            <!-- 桌機版：付款方式 -->
+            <div id="d-content-payment" class="hidden">
+                <p class="d-payment-desc">在 Google 帳戶中新增付款方式。Google 不會對外公開你的付款資訊。</p>
+                <div class="d-payment-method">
+                    <img src="https://lh6.ggpht.com/Yxh9sdcTHd977Lb0QUdfokZHoeaudu1ORe0i-__gdbH4te_4Mfvx3Y8FhR9-MUkzkXgLpo6H" alt="Visa">
+                    <span>Visa-8809</span>
+                </div>
+                <div class="d-payment-actions">
+                    <button class="d-payment-btn unclickable"><span style="font-size: 20px; line-height: 1;">+</span> 新增付款方式</button>
+                    <button class="d-payment-btn unclickable">
+                        <svg style="width: 18px; height: 18px; fill: currentColor;" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path></svg> 
+                        編輯付款方式
+                    </button>
+                </div>
+            </div>
+
+            <!-- 桌機版：預算和訂單記錄 -->
+            <div id="d-content-history" class="hidden">
+                <div style="margin-bottom: 40px;">
+                    <div style="font-size: 20px; color: var(--text-primary); margin-bottom: 8px;">5月的支出總額：$190</div>
+                    <div style="font-size: 14px; color: var(--text-secondary); margin-bottom: 20px;">你設定的預算僅適用於這個帳戶，你可以隨時變更預算金額。</div>
+                    <button class="d-payment-btn unclickable">
+                        <svg style="width: 18px; height: 18px; fill: currentColor;" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path></svg>
+                        設定預算
+                    </button>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 16px;">
+                    <h2 style="font-size: 24px; font-weight: 400; color: var(--text-primary); margin: 0;">訂單記錄</h2>
+                </div>
+
+                <div class="d-month-header">4月</div>
+                <div class="d-item">
+                    <img src="https://play-lh.googleusercontent.com/aCdwcnQx71qiSx5XF0zer3NyAj99BbwUlK2mogwuo4KGMKQ7LPbbMm4UxZsAjNQUuGAid38vY7a_XzO4iHHd=s50-rw" alt="月資源包A" class="d-logo">
+                    <div class="d-info">
+                        <p class="d-name">月資源包A</p>
+                        <p class="d-desc">2026年4月11日</p>
+                    </div>
+                    <div class="d-price">$1,000.00</div>
+                    <div class="d-action"><button class="unclickable">回報問題</button></div>
+                </div>
+                <div class="d-item">
+                    <img src="https://play-lh.googleusercontent.com/aCdwcnQx71qiSx5XF0zer3NyAj99BbwUlK2mogwuo4KGMKQ7LPbbMm4UxZsAjNQUuGAid38vY7a_XzO4iHHd=s50-rw" alt="高級通行證" class="d-logo">
+                    <div class="d-info">
+                        <p class="d-name">高級通行證</p>
+                        <p class="d-desc">2026年4月9日</p>
+                    </div>
+                    <div class="d-price">$580.00</div>
+                    <div class="d-action"><button class="unclickable">回報問題</button></div>
+                </div>
+
+                <div class="d-month-header">10月 2025</div>
+                <div class="d-item">
+                    <img src="https://play-lh.googleusercontent.com/VZwuIXIGUFIwk1z2IXhMaPcLqoSWfPcuK-JxXgvh_uM0Ob2qETvD9PHQ2rWEx9qiUQ=s50-rw" alt="聖晶石" class="d-logo">
+                    <div class="d-info">
+                        <p class="d-name">聖晶石25個+贈送（免費）16個</p>
+                        <p class="d-desc">2025年10月23日</p>
+                    </div>
+                    <div class="d-price">$720.00</div>
+                    <div class="d-action"><button class="unclickable">回報問題</button></div>
+                </div>
+
+                <div class="d-month-header">9月 2025</div>
+                <div class="d-item">
+                    <img src="https://play-lh.googleusercontent.com/B5AENJqFOd91t5cWZLTQbVUm7iDWzYVM1n0Pe2RI_46dhlWMtVAUBioUvy4YMXWdwA=s50-rw" class="d-logo" style="background:white; padding:2px;">
+                    <div class="d-info">
+                        <p class="d-name">Google AI Pro (5 TB)</p>
+                        <p class="d-desc">2025年9月8日</p>
+                    </div>
+                    <div class="d-price">$6,500.00</div>
+                    <div class="d-action"><button class="unclickable">回報問題</button></div>
+                </div>
+
+                <div class="d-month-header">8月 2025</div>
+                <div class="d-item">
+                    <img src="https://play-lh.googleusercontent.com/B5AENJqFOd91t5cWZLTQbVUm7iDWzYVM1n0Pe2RI_46dhlWMtVAUBioUvy4YMXWdwA=s50-rw" class="d-logo" style="background:white; padding:2px;">
+                    <div class="d-info">
+                        <p class="d-name">Google AI Pro (5 TB)</p>
+                        <p class="d-desc">2025年8月18日</p>
+                    </div>
+                    <div class="d-price">
+                        <div>$650.00</div>
+                        <div class="d-refund-text">已退款</div>
+                    </div>
+                    <div class="d-action"><button class="unclickable" style="color: transparent;">回報問題</button></div>
+                </div>
+
+                <div class="d-month-header">7月 2025</div>
+                <div class="d-item">
+                    <img src="https://play-lh.googleusercontent.com/B5AENJqFOd91t5cWZLTQbVUm7iDWzYVM1n0Pe2RI_46dhlWMtVAUBioUvy4YMXWdwA=s50-rw" class="d-logo" style="background:white; padding:2px;">
+                    <div class="d-info">
+                        <p class="d-name">Google AI Pro (5 TB)</p>
+                        <p class="d-desc">2025年7月18日</p>
+                    </div>
+                    <div class="d-price">$650.00</div>
+                    <div class="d-action"><button class="unclickable" style="color: transparent;">回報問題</button></div>
+                </div>
+            </div>
+        </main>
+        
+        <!-- 桌機版頁尾 -->
+        <footer>
+            <div class="footer-divider"></div>
+            <div class="footer-top">
+                <div class="footer-section">
+                    <span class="footer-heading">Google Play</span>
+                    <a href="#" class="footer-link unclickable">Play Pass</a>
+                    <a href="#" class="footer-link unclickable">Play 點數</a>
+                    <a href="#" class="footer-link unclickable">禮物卡</a>
+                </div>
+            </div>
+        </footer>
+    </div>
 
     <!-- 頁籤切換腳本 -->
     <script>
-        const tabPayment = document.getElementById('tab-payment');
-        const tabSubs = document.getElementById('tab-subs');
-        const tabHistory = document.getElementById('tab-history');
-        const mobileTitle = document.getElementById('mobile-header-title');
+        // === 手機版導覽邏輯 ===
+        const mBtnBack = document.getElementById('m-btn-back');
+        const mTitle = document.getElementById('m-title');
         
-        const contentPayment = document.getElementById('content-payment');
-        const contentSubs = document.getElementById('content-subs');
-        const contentHistory = document.getElementById('content-history');
+        const mPageMenu = document.getElementById('m-page-menu');
+        const mPages = {
+            'payment': document.getElementById('m-page-payment'),
+            'auth': document.getElementById('m-page-auth'),
+            'subs': document.getElementById('m-page-subs'),
+            'history': document.getElementById('m-page-history'),
+            'redeem': document.getElementById('m-page-redeem')
+        };
 
-        function resetTabs() {
-            tabPayment.classList.remove('active');
-            tabSubs.classList.remove('active');
-            tabHistory.classList.remove('active');
-            contentPayment.classList.add('hidden');
-            contentSubs.classList.add('hidden');
-            contentHistory.classList.add('hidden');
+        function navToMobile(pageId, titleText) {
+            mPageMenu.classList.add('hidden');
+            Object.values(mPages).forEach(page => {
+                if (page) page.classList.add('hidden');
+            });
+            
+            if (mPages[pageId]) {
+                mPages[pageId].classList.remove('hidden');
+            }
+            
+            mTitle.textContent = titleText;
+            mBtnBack.classList.remove('hidden');
         }
 
-        tabPayment.addEventListener('click', (e) => {
-            e.preventDefault();
-            resetTabs();
-            tabPayment.classList.add('active');
-            contentPayment.classList.remove('hidden');
-            mobileTitle.textContent = "付款方式";
+        mBtnBack.addEventListener('click', () => {
+            Object.values(mPages).forEach(page => {
+                if (page) page.classList.add('hidden');
+            });
+            mPageMenu.classList.remove('hidden');
+            mTitle.textContent = "付款與訂閱";
+            mBtnBack.classList.add('hidden');
         });
 
-        tabSubs.addEventListener('click', (e) => {
-            e.preventDefault();
-            resetTabs();
-            tabSubs.classList.add('active');
-            contentSubs.classList.remove('hidden');
-            mobileTitle.textContent = "訂閱項目";
-        });
+        // === 桌機版導覽邏輯 ===
+        const dTabPayment = document.getElementById('d-tab-payment');
+        const dTabSubs = document.getElementById('d-tab-subs');
+        const dTabHistory = document.getElementById('d-tab-history');
+        
+        const dContentPayment = document.getElementById('d-content-payment');
+        const dContentSubs = document.getElementById('d-content-subs');
+        const dContentHistory = document.getElementById('d-content-history');
 
-        tabHistory.addEventListener('click', (e) => {
-            e.preventDefault();
-            resetTabs();
-            tabHistory.classList.add('active');
-            contentHistory.classList.remove('hidden');
-            mobileTitle.textContent = "預算和消費記錄";
+        function resetDesktopTabs() {
+            dTabPayment.classList.remove('active');
+            dTabSubs.classList.remove('active');
+            dTabHistory.classList.remove('active');
+            dContentPayment.classList.add('hidden');
+            dContentSubs.classList.add('hidden');
+            dContentHistory.classList.add('hidden');
+        }
+
+        dTabPayment.addEventListener('click', (e) => {
+            e.preventDefault(); resetDesktopTabs();
+            dTabPayment.classList.add('active'); dContentPayment.classList.remove('hidden');
+        });
+        dTabSubs.addEventListener('click', (e) => {
+            e.preventDefault(); resetDesktopTabs();
+            dTabSubs.classList.add('active'); dContentSubs.classList.remove('hidden');
+        });
+        dTabHistory.addEventListener('click', (e) => {
+            e.preventDefault(); resetDesktopTabs();
+            dTabHistory.classList.add('active'); dContentHistory.classList.remove('hidden');
         });
     </script>
 </body>
