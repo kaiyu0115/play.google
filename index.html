@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>付款與訂閱 - Google Play (Demo)</title>
+    <title>Google Play</title>
+    <link rel="shortcut icon" href="https://www.gstatic.com/android/market_images/web/favicon_v3.ico">
     <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
     
     <style>
@@ -79,7 +80,7 @@
         .icon-btn svg { width: 24px; height: 24px; fill: currentColor; }
         .profile-pic { width: 32px; height: 32px; border-radius: 50%; margin-left: 8px; }
 
-        main.desktop-main { max-width: 1000px; margin: 0 auto; padding: 36px 24px; min-height: calc(100vh - 300px); }
+        main.desktop-main { max-width: 1200px; margin: 0 auto; padding: 36px 24px; min-height: calc(100vh - 300px); }
         h1.d-title { font-size: 28px; font-weight: 400; margin: 0 0 32px 0; color: var(--text-primary); }
         .d-tabs { display: flex; gap: 32px; border-bottom: 1px solid var(--border-color); margin-bottom: 32px; }
         .d-tab { text-decoration: none; color: var(--text-secondary); font-size: 14px; font-weight: 500; padding-bottom: 16px; border-bottom: 2px solid transparent; cursor: pointer; }
@@ -129,13 +130,19 @@
 
             .m-subs-info { padding: 16px 24px; font-size: 14px; color: var(--text-secondary); line-height: 1.5; }
             .m-subs-section { font-size: 16px; color: var(--text-primary); margin: 24px 24px 16px; font-weight: 400; }
-            .m-sub-card { border: 1px solid var(--border-color); border-radius: 8px; margin: 0 24px 16px; padding: 16px; }
-            .m-sub-card-top { display: flex; justify-content: space-between; align-items: flex-start; }
-            .m-sub-detail { flex: 1; padding-left: 16px; padding-right: 16px; }
-            .m-sub-title { font-size: 16px; color: var(--accent-blue); margin: 0 0 8px 0; font-weight: 400; }
+
+            /* 扁平訂閱項目 */
+            .m-sub-flat { padding: 24px; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); }
+            .m-sub-flat-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+            .m-sub-flat-info { flex: 1; }
+            .m-sub-flat-name { font-size: 20px; font-weight: 400; color: var(--text-primary); margin: 0 0 6px 0; }
+            .m-sub-flat-icon { width: 72px; height: 72px; border-radius: 12px; flex-shrink: 0; object-fit: cover; }
+            .m-sub-status-red { color: var(--danger-red); font-size: 14px; margin: 0 0 6px 0; }
             .m-sub-desc { font-size: 14px; color: var(--text-secondary); margin: 0 0 4px 0; }
-            .m-sub-status-red { color: var(--danger-red); margin: 8px 0 4px; font-size: 14px; }
-            .m-sub-icon { width: 48px; height: 48px; border-radius: 8px; object-fit: cover; }
+            .m-sub-benefits-title { font-size: 16px; color: var(--text-primary); font-weight: 400; margin: 20px 0 12px 0; }
+            .m-sub-benefit-item { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px; font-size: 14px; color: var(--text-secondary); line-height: 1.5; }
+            .m-sub-benefit-check { flex-shrink: 0; font-size: 14px; color: var(--text-secondary); margin-top: 1px; }
+
             
             .m-budget-top { padding: 24px; }
             .m-budget-label { font-size: 14px; color: var(--text-secondary); margin-bottom: 24px; }
@@ -148,21 +155,107 @@
             .m-history-info { flex: 1; }
             .m-history-title { font-size: 16px; color: var(--text-primary); margin: 0 0 4px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px; }
             .m-history-date { font-size: 14px; color: var(--text-secondary); margin: 0; }
-            .m-history-price { font-size: 16px; color: var(--text-primary); margin-left: auto; text-align: right; }
+            .m-history-price { font-size: 16px; color: var(--text-primary); width: 90px; flex-shrink: 0; text-align: right; }
             .m-refund-text { font-size: 12px; color: var(--text-secondary); margin-top: 4px; text-align: right; }
-            .order-action-chevron { fill: var(--text-secondary); width: 20px; height: 20px; margin-left: 8px; }
+            .order-action-chevron { fill: var(--text-secondary); width: 20px; height: 20px; flex-shrink: 0; margin-left: 8px; }
         }
 
-        /* 頁尾 */
-        footer { max-width: 1296px; margin: 0 auto; padding: 0 72px 40px 72px; }
-        .footer-divider { border-top: 1px solid var(--border-color); margin-bottom: 36px; }
-        .footer-top { display: flex; gap: 160px; }
-        .footer-section { display: flex; flex-direction: column; }
-        .footer-heading { font-size: 14px; font-weight: 500; color: var(--text-primary); margin-bottom: 24px; }
-        .footer-link { font-size: 14px; color: var(--text-secondary); text-decoration: none; margin-bottom: 16px; }
+        /* 頁尾 — Google Play 原生 class 對應樣式 */
+        footer.yhtbu {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px 40px 24px;
+            box-sizing: border-box;
+        }
+        /* 頂部分隔線 */
+        .srvBL {
+            border-top: 1px solid var(--border-color);
+            margin-bottom: 36px;
+        }
+        /* 上方兩欄連結區 */
+        .Hc0nne {
+            display: flex;
+            gap: 0;
+            margin-bottom: 36px;
+        }
+        .Hc0nne > div {
+            min-width: 300px;
+        }
+        .Hc0nne section {
+            display: flex;
+            flex-direction: column;
+        }
+        /* 欄位標題 */
+        .GMGZAc {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            display: block;
+            margin-bottom: 20px;
+        }
+        /* 連結包裝 */
+        .AU8vyc {
+            text-decoration: none;
+            color: inherit;
+        }
+        /* 連結文字 */
+        .CmHxkb {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin: 0 0 16px 0;
+            padding: 0;
+        }
+        .AU8vyc:hover .CmHxkb {
+            color: var(--text-primary);
+        }
+        /* 底部法律連結列 */
+        .sv9Noe {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            border-top: 1px solid var(--border-color);
+            padding-top: 16px;
+        }
+        .KvNvKe {
+            font-size: 12px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            padding-right: 24px;
+            line-height: 1.8;
+        }
+        /* 地區選項推到最右 */
+        .KvNvKe.avtIH {
+            margin-left: auto;
+            padding-right: 0;
+        }
+        /* 底部連結文字 */
+        .QOTGFf {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin: 0;
+            padding: 0;
+        }
+        .AU8vyc:hover .QOTGFf {
+            color: var(--text-primary);
+        }
+        /* 地區旗幟+文字容器 */
+        .AJ34ce {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .GrpFfc {
+            width: 20px;
+            height: 14px;
+            object-fit: cover;
+            border-radius: 2px;
+        }
+        .yVZQTb {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
         @media (max-width: 768px) {
-            footer { padding: 24px 16px; }
-            .footer-top { flex-direction: column; gap: 24px; }
+            footer.yhtbu { display: none; }
         }
     </style>
 </head>
@@ -261,16 +354,29 @@
             </div>
             <div class="m-subs-section">由 Google 管理</div>
 
-            <!-- 只保留 Google One -->
-            <div class="m-sub-card">
-                <div class="m-sub-card-top">
-                    <img src="https://play-lh.googleusercontent.com/B5AENJqFOd91t5cWZLTQbVUm7iDWzYVM1n0Pe2RI_46dhlWMtVAUBioUvy4YMXWdwA=s50-rw" class="m-sub-icon" style="background:white; padding:4px; box-sizing:border-box;">
-                    <div class="m-sub-detail">
-                        <div class="m-sub-title">Google One</div>
+            <!-- Google One — 扁平列表樣式 -->
+            <div class="m-sub-flat">
+                <div class="m-sub-flat-top">
+                    <div class="m-sub-flat-info">
+                        <div class="m-sub-flat-name">Google One</div>
                         <div class="m-sub-status-red">已取消</div>
                         <div class="m-sub-desc">Google AI Pro (5 TB)</div>
                         <div class="m-sub-desc">訂閱期將於 2026年9月8日結束</div>
                     </div>
+                    <img src="https://play-lh.googleusercontent.com/B5AENJqFOd91t5cWZLTQbVUm7iDWzYVM1n0Pe2RI_46dhlWMtVAUBioUvy4YMXWdwA=s50-rw" class="m-sub-flat-icon" style="background:white; padding:4px; box-sizing:border-box;">
+                </div>
+                <div class="m-sub-benefits-title">你的方案包含</div>
+                <div class="m-sub-benefit-item">
+                    <span class="m-sub-benefit-check">✓</span>
+                    <span>在雲端硬碟、Gmail 和 Google 相簿中享有加大儲存空間</span>
+                </div>
+                <div class="m-sub-benefit-item">
+                    <span class="m-sub-benefit-check">✓</span>
+                    <span>由 Google 專家直接提供的支援服務</span>
+                </div>
+                <div class="m-sub-benefit-item">
+                    <span class="m-sub-benefit-check">✓</span>
+                    <span>專屬會員福利</span>
                 </div>
             </div>
         </div>
@@ -278,7 +384,7 @@
         <div id="m-page-history" class="hidden">
             <div class="m-budget-top">
                 <div class="m-budget-label" style="font-size: 16px;">5月的支出總額</div>
-                <div class="m-budget-amount">$190</div>
+                <div class="m-budget-amount">$0</div>
                 <div class="m-budget-desc">你設定的預算僅適用於這個帳戶，你可以隨時變更預算金額。</div>
                 <span class="m-budget-link unclickable">設定預算</span>
             </div>
@@ -458,7 +564,7 @@
             <!-- 桌機版：預算和訂單記錄 -->
             <div id="d-content-history" class="hidden">
                 <div style="margin-bottom: 40px;">
-                    <div style="font-size: 20px; color: var(--text-primary); margin-bottom: 8px;">5月的支出總額：$190</div>
+                    <div style="font-size: 20px; color: var(--text-primary); margin-bottom: 8px;">5月的支出總額：$0</div>
                     <div style="font-size: 14px; color: var(--text-secondary); margin-bottom: 20px;">你設定的預算僅適用於這個帳戶，你可以隨時變更預算金額。</div>
                     <button class="d-payment-btn unclickable">
                         <svg style="width: 18px; height: 18px; fill: currentColor;" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path></svg>
@@ -540,17 +646,7 @@
         </main>
         
         <!-- 桌機版頁尾 -->
-        <footer>
-            <div class="footer-divider"></div>
-            <div class="footer-top">
-                <div class="footer-section">
-                    <span class="footer-heading">Google Play</span>
-                    <a href="#" class="footer-link unclickable">Play Pass</a>
-                    <a href="#" class="footer-link unclickable">Play 點數</a>
-                    <a href="#" class="footer-link unclickable">禮物卡</a>
-                </div>
-            </div>
-        </footer>
+        <footer class="yhtbu" jscontroller="rpbmN" jsaction="tGMTLb:T1PkR"><div class="srvBL"></div><div class="Hc0nne"><div><section><span class="GMGZAc">Google Play</span><div><a href="/store/pass/getstarted" target="_blank" jslog="197536; 1:3121|qgIF0gECEAE=; track:click;" class="AU8vyc"><p class="CmHxkb">Play Pass</p></a></div><div><a href="/store/points" target="_blank" jslog="197536; 1:3121|qgIF0gECEAI=; track:click;" class="AU8vyc"><p class="CmHxkb">Play 點數</p></a></div><div><a href="https://play.google.com/about/giftcards" target="_blank" jslog="197536; 1:3121|qgIF0gECEAM=; track:click;" class="AU8vyc"><p class="CmHxkb">禮物卡</p></a></div><div><a href="/redeem" target="_blank" jslog="197536; 1:3121|qgIF0gECEAQ=; track:click;" class="AU8vyc"><p class="CmHxkb">兌換</p></a></div><div><a href="https://support.google.com/googleplay/answer/134336" target="_blank" jslog="197536; 1:3121|qgIF0gECEAU=; track:click;" class="AU8vyc"><p class="CmHxkb">退款政策</p></a></div></section></div><div><section><span class="GMGZAc">親子與家庭</span><div><a href="https://support.google.com/googleplay?p=pff_parentguide" target="_blank" jslog="197536; 1:3121|qgIF0gECEAc=; track:click;" class="AU8vyc"><p class="CmHxkb">家長指南</p></a></div><div><a href="https://support.google.com/googleplay/answer/7007852" target="_blank" jslog="197536; 1:3121|qgIF0gECEAg=; track:click;" class="AU8vyc"><p class="CmHxkb">家庭共享</p></a></div></section></div></div><div class="sv9Noe"><div class="KvNvKe"><a href="https://play.google.com/intl/zh-TW_tw/about/play-terms.html" target="_blank" jslog="197536; 1:3121; track:click;" class="AU8vyc"><p class="QOTGFf">服務條款</p></a></div><div class="KvNvKe"><a href="https://policies.google.com/privacy" target="_blank" jslog="197536; 1:3121; track:click;" class="AU8vyc"><p class="QOTGFf">隱私權</p></a></div><div class="KvNvKe"><a href="https://support.google.com/googleplay/?p=about_play" target="_blank" jslog="197536; 1:3121; track:click;" class="AU8vyc"><p class="QOTGFf">關於 Google Play</p></a></div><div class="KvNvKe"><a href="http://developer.android.com/index.html" target="_blank" jslog="197536; 1:3121; track:click;" class="AU8vyc"><p class="QOTGFf">開發人員</p></a></div><div class="KvNvKe"><a href="https://store.google.com/?playredirect=true&amp;utm_source=play&amp;utm_medium=google_oo&amp;utm_campaign=GS106288" target="_blank" jslog="197536; 1:3121; track:click;" class="AU8vyc"><p class="QOTGFf">Google Store</p></a></div><div class="KvNvKe">所有價格均含加值稅。</div><div class="KvNvKe avtIH"><div class="AJ34ce"><img src="https://ssl.gstatic.com/store/images/regionflags/taiwan.png" class="GrpFfc" aria-hidden="true"><div class="yVZQTb">台灣 (繁體中文)</div></div></div></div></footer>
     </div>
 
     <!-- 頁籤切換腳本 -->
